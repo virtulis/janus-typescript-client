@@ -1,8 +1,11 @@
+import IJanusConnectionCallbacks = JanusStatic.IJanusConnectionCallbacks;
+
 declare class JanusStatic {
   constructor(options: JanusStatic.IJanusOptions);
 
   getServer(): string;
   isConnected(): boolean;
+  reconnect(callbacks: IJanusConnectionCallbacks): void;
   getSessionId(): string;
   attach(options: JanusStatic.IJanusPluginOptions): void;
   destroy(options?: JanusStatic.IJanusDestroyedOptions): void;
@@ -15,8 +18,15 @@ declare module JanusStatic {
   export function isWebrtcSupported(): boolean;
   export function isExtensionEnabled(): boolean;
   export function randomString(length: number): string;
+  export function useDefaultDependencies(deps: IJanusDependencyOverrides): IJanusDependencies;
+  export function useOldDependencies(deps: IJanusDependencyOverrides): IJanusDependencies;
 
-  export interface IJanusOptions {
+  export interface IJanusConnectionCallbacks {
+    success: () => void;
+    error: (err: Error) => void;
+  }
+
+  export interface IJanusOptions extends IJanusConnectionCallbacks {
     server: string | string[];
     iceServers?: string[];
     ipv6?: boolean;
@@ -25,14 +35,20 @@ declare module JanusStatic {
     destroyOnUnload?: boolean;
     token?: string;
     apisecret?: string;
-
-    success: () => void;
-    error: (err: Error) => void;
     destroyed: () => void;
   }
 
+  export interface IJanusDependencies {
+    webRTCAdapter?: any;
+  }
+
+  export interface IJanusDependencyOverrides {
+    adapter?: any;
+  }
+
   export interface IJanusInitOptions {
-    debug?: boolean;
+    debug?: boolean | 'all' | string[];
+    dependencies?: IJanusDependencies;
     callback: Function;
   }
 
