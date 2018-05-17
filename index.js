@@ -1,3 +1,3 @@
-const Janus = require('./lib/janus.nojquery');
+const Janus = require('./lib/janus');
 
 module.exports = Janus;
